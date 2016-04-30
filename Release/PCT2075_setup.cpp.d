@@ -12,7 +12,8 @@ PCT2075_setup.cpp.o: ../PCT2075_setup.cpp ../PCT2075_setup.h \
  C:\Users\Rik\ van\ der\ Vlist\Downloads\eclipseArduino\arduinoPlugin\packages\arduino\hardware\avr\1.6.10\cores\arduino/USBAPI.h \
  C:\Users\Rik\ van\ der\ Vlist\Downloads\eclipseArduino\arduinoPlugin\packages\arduino\hardware\avr\1.6.10\cores\arduino/Arduino.h \
  C:\Users\Rik\ van\ der\ Vlist\Downloads\eclipseArduino\arduinoPlugin\packages\arduino\hardware\avr\1.6.10\variants\standard/pins_arduino.h \
- ../PCT2075.h ../external_board.h ../TestSignal.h ../TestMode.h
+ ../PCT2075.h ../TestMode.h ../TestSignal.h ../Serial.h ../buffer.h \
+ ../misc.h ../external_board.h
 
 ../PCT2075_setup.h:
 
@@ -44,8 +45,14 @@ C:\Users\Rik\ van\ der\ Vlist\Downloads\eclipseArduino\arduinoPlugin\packages\ar
 
 ../PCT2075.h:
 
-../external_board.h:
+../TestMode.h:
 
 ../TestSignal.h:
 
-../TestMode.h:
+../Serial.h:
+
+../buffer.h:
+
+../misc.h:
+
+../external_board.h:

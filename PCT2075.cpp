@@ -1,46 +1,8 @@
 /**
  * This file contains all functions that are related to communication with the PCT2075 sensor
  */
-#include "Serial.h"
 #include "PCT2075_setup.h"
-#include "buffer.h"
-#include "external_board.h"
 
-/**
- * This function reads the temperature register of the PCT2075.
- * @param SENS_ADDR the 7-bit address of the device to be read
- * @param num the number of the device on the board in a range from 1-36
- * @return the two bytes that were read from the temperature register.
- */
-uint16_t read_temperature(byte SENS_ADDR, int num)
-{
-  int16_t reading = 0;
-  int8_t result;
-  // instruct sensor to return a particular echo reading
-  Wire.beginTransmission(SENS_ADDR); // transmit to PCT2075 temp sensor
-  Wire.write(byte(0x00));      // sets register pointer to echo #1 register (0x02)
-  result = Wire.endTransmission();      // stop transmitting
-  
-  // print error messages if any
-  if(result)
-  {
-      Serial.println(F("PCT2075:"));
-      print_error_msg(result);
-  }
-
-  // request reading from sensor
-  Wire.requestFrom(SENS_ADDR, byte(0x02));    // request 2 bytes from slave device #112
-
-  // receive reading from sensor
-  if(2 <= Wire.available())    // if two bytes were received
-  {
-    reading = Wire.read();  // receive high byte (overwrites previous reading)
-    reading = reading << 8;    // shift high byte to be high 8 bits
-    reading |= Wire.read(); // receive low byte as lower 8 bits
-//    temperature = (reading >> 5) * 0.125;
-  } 
-  return reading;
-}
 
 /**
 * This function calls the read_temperature function for all sensors
@@ -52,7 +14,7 @@ void read_temperatures(void){
 	for(i = 0; i < 4; i++){
 		set_multiplexer(i);
 		for(int j = 0; j < 9; j++){
-			value = read_temperature(sens_addrs_gnd[j], j+i*9);
+			value = read_register(sens_addrs_gnd[j], 0x00);
 			bufferinsert(j+i*9, (float) (value >> 5) * 0.125);
 		}
 	}
@@ -72,13 +34,11 @@ uint16_t read_register(byte SENS_ADDR, byte REG_ADDR)
   Wire.beginTransmission(SENS_ADDR); // transmit to PCT2075 temp sensor
   Wire.write(REG_ADDR);      // sets register pointer to echo #1 register (0x02)
   result = Wire.endTransmission();      // stop transmitting
-    
   if(result)
   {
       Serial.println(F("PCT2075:"));
       print_error_msg(result);
   }
-
   // request reading from sensor
   Wire.requestFrom(SENS_ADDR, byte(0x02));    // request 2 bytes from slave device #112
 
@@ -88,7 +48,9 @@ uint16_t read_register(byte SENS_ADDR, byte REG_ADDR)
     reading = Wire.read();  // receive high byte (overwrites previous reading)
     reading = reading << 8;    // shift high byte to be high 8 bits
     reading |= Wire.read(); // receive low byte as lower 8 bits
-  } 
+  } else {
+	  Serial.println("ERROR reading register");
+  }
   return reading;
 }
 
@@ -105,18 +67,40 @@ uint8_t read_register_byte(byte SENS_ADDR, byte REG_ADDR)
       Serial.println(F("PCT2075:"));
       print_error_msg(result);
   }
-
   // request reading from sensor
-  Wire.requestFrom(SENS_ADDR, byte(0x01));    // request 2 bytes from slave device #112
-
+  Wire.requestFrom(SENS_ADDR, byte(0x01));    // request 2 bytes from slave device
   // receive reading from sensor
-  if(2 <= Wire.available())    // if two bytes were received
-  {
-    reading = Wire.read();  // receive high byte (overwrites previous reading)
-    reading = reading << 8;    // shift high byte to be high 8 bits
-    reading |= Wire.read(); // receive low byte as lower 8 bits
+  if(Wire.available()){
+	reading = Wire.read();  // receive byte
+  } else {
+	  Serial.println("ERROR reading register");
   }
   return reading;
+}
+
+/**
+ * Write a word/uint16_t value to a two byte register on the DUT
+ * @param SENS_ADDR the 7-bit slave address of the temperature sensor
+ * @param REG_ADDR the pointer for the register that is to be written
+ * @param value the contents of the register
+ */
+void write_register(byte SENS_ADDR, byte REG_ADDR, uint16_t value){
+	  Wire.beginTransmission(SENS_ADDR); // transmit to PCT2075 temp sensor
+	  Wire.write(byte(value >> 8));
+	  Wire.write(byte(value & 0x00FF));
+	  result = Wire.endTransmission();
+}
+
+/**
+ * Write a single byte register on the DUT
+ * @param SENS_ADDR the 7-bit slave address of the temperature sensor
+ * @param REG_ADDR the pointer for the register that is to be written
+ * @param value the contents of the register
+ */
+void write_register_byte(byte SENS_ADDR, byte REG_ADDR, uint8_t value){
+	  Wire.beginTransmission(SENS_ADDR); // transmit to PCT2075 temp sensor
+	  Wire.write(byte(value));
+	  result = Wire.endTransmission();
 }
 
 /**

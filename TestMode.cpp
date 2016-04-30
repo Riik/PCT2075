@@ -4,10 +4,7 @@
  *  Created on: 27 apr. 2016
  *      Author: Rik van der Vlist
  */
-#include "Arduino.h"
 #include "PCT2075_setup.h"
-#include "TestMode.h"
-#include "TestSignal.h"
 
 /**
  * This function enters a certain testmode. First the board is power cycled, and then
@@ -46,30 +43,43 @@ void disable_TWI(void)
 {
   TWCR &= !(1<<TWEN);
 }
-/*
-extern void write_MTP(uint16_t value, byte REG_ADDR, byte ROW_ADDR)
+/**
+ * This function writes a two byte value temporary to the trim registers, which cannot be written directly over I2C.
+ * First the word is written to the holding register, and then the contents of the holding register are transfered to the trim registers
+ * using the MTP control. See the PCT2075 testmode summary for further reference.
+ * @param SENS_ADDR the 7-bit address of the slave device
+ * @param ROW_ADDR the row address of the MTP register.
+ * @param value the values to be written to the MTP/trim registers.
+ */
+void write_MTP(byte SENS_ADDR, byte ROW_ADDR, uint16_t value)
 {
-	for(int row =0; row < 4; row++){
-		// for each row, set the multiplexer and then send the testmode signal
-		set_multiplexer(row);
-		testmode(TESTMODE_3);
-		for(int i = 0; i < 9; i++){
-
-		}
-	}
-}
-*/
-extern void write_MTP(uint16_t value, byte SENS_ADDR, byte REG_ADDR, byte ROW_ADDR)
-{
-	uint8_t register_value;
-
+	uint8_t temp;
+	// prepare the command for MTP control register: set MTP active and address bits
+	temp = (ROW_ADDR <<  4) | 0x80;
+	// activate the MTP register
+	write_register(SENS_ADDR, MTP_CONTROL_REG, (uint16_t) temp);
 	#ifdef VERBOSE
-	Serial.println(F("Current value of ADC/OSC trim REG:"));
+	Serial.print(F("Activating MTP: ")); printBits_8(temp);
 	#endif
 
+	write_register(SENS_ADDR, HOLDING_REGISTER, value);
+	// set MTP control to MTP active, MTP read holding and set MTP ROW address
+	temp = (ROW_ADDR << 4) | 0x88;
+	#ifdef VERBOSE
+	Serial.print(F("Writing RDH bit: ")); printBits_8(temp);
+	#endif
+	// first byte of register are 0x00, second byte is MTP control
+	write_register(SENS_ADDR, MTP_CONTROL_REG, (uint16_t) temp);
+	// wait for device to write the MTP register
+	delay(50);
+}
 
-
-
+void read_x4_registers(byte SENS_ADDR){
+	uint16_t batchid;
+	uint8_t adcreg;
+	testmode(TESTMODE_3);
+	adcreg = read_register_byte(SENS_ADDR, ADC_OSC_REG);
+	batchid = read_register(SENS_ADDR, BATCHID_REG);
 }
 
 

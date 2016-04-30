@@ -5,11 +5,8 @@
  *  Created on: 20 apr. 2016
  *      Author: Rik van der Vlist
  */
-#include "Arduino.h"
-#include "external_board.h"
-#include "Wire.h"
-#include "Serial.h"
 #include "PCT2075_setup.h"
+
 /**
  * Tests the I2C connection to the DAC and sets the output voltage to 0 V.
  */

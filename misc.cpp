@@ -5,8 +5,7 @@
  *      Author: Rik van der Vlist
  */
 #include "PCT2075_setup.h"
-#include "external_board.h"
-#include "Arduino.h"
+
 /**
  * This function applies a given function to all the DUTs.
  * It sets the multiplexer and loops trough all the I2C adresses.

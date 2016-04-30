@@ -1,8 +1,5 @@
 #include "PCT2075_setup.h"
-#include "PCT2075.h"
-#include "external_board.h"
-#include "TestSignal.h"
-#include "TestMode.h"
+
 //#include "exit_testmode.h"
 
 int byteswritten, result, state;
@@ -50,6 +47,7 @@ void loop()
 	digitalWrite(ledpin, HIGH);
 	delay(500);
 	digitalWrite(ledpin, LOW);
-//	read_temperatures();
-	testmode(TESTMODE_2);
+	read_temperatures();
+	write_register(0x00, 0x00, 0xABCD);
+//	testmode(TESTMODE_2);
 }

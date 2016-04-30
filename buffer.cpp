@@ -1,8 +1,5 @@
 #include "PCT2075_setup.h"
-#include "PCT2075.h"
-#include "external_board.h"
-#include "buffer.h"
-#include "Arduino.h"
+
 ///This array functions as the main buffer to store measured values.
 float buffer[36];
 /// This string holds the name/identifier of the buffer.

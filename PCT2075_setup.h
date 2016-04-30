@@ -12,6 +12,15 @@
 
 #include "Wire.h"
 #include "Arduino.h"
+#include "PCT2075.h"
+#include "TestMode.h"
+#include "TestSignal.h"
+#include "Serial.h"
+#include "buffer.h"
+#include "misc.h"
+#include "external_board.h"
+
+
 
 extern int byteswritten, result, state;
 extern float temperature;
@@ -21,16 +30,20 @@ extern byte register_select;
 extern const char sens_addrs_flt[];
 extern const char sens_addrs_gnd[];
 
+#define ADC_OSC_REG			0x09
+#define MTP_CONTROL_REG		0x07
+#define HOLDING_REGISTER 	0x0B
+#define	BATCHID_REG			0x0D
 
-#define SENS_ADDR_GND  0x4a
-#define SENS_ADDR_FLOAT 0x2f
-#define IO_ADDR      0x41
-#define DAC_ADDR     0x60
-#define IAMP_IN      A0
-#define led          13
-#define MULTIPLEXER_A 8
-#define MULTIPLEXER_B 9
-#define POWER_PIN    10
+#define SENS_ADDR_GND  		0x4a
+#define SENS_ADDR_FLOAT 	0x2f
+#define IO_ADDR      		0x41
+#define DAC_ADDR     		0x60
+#define IAMP_IN      		A0
+#define led          		13
+#define MULTIPLEXER_A		8
+#define MULTIPLEXER_B 		9
+#define POWER_PIN    		10
 #define VERBOSE
 
 #define TEMP_REG      0x00
