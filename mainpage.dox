@@ -1,0 +1,8 @@
+/*! \mainpage PCT2075 measurement setup Arduino code
+ *
+ * \section intro_sec Introduction
+ *
+ * This code was written by Rik van der Vlist in the scope of an advanced temperature measurent on the PCT1075 and PCT2075 temperature sensors by NXP.
+ * The code contains several libraries that implement various testmodes and standard functions of the PCT2075/PCT1075.
+ * 
+ */
